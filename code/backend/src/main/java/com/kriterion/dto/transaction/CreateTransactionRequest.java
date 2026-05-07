@@ -10,23 +10,26 @@ import java.time.LocalDate;
 import lombok.Data;
 
 @Data
-public class TransactionRequest {
-    @NotBlank
+public class CreateTransactionRequest {
+    @NotBlank(message = "Title is required")
     private String title;
 
-    @NotNull
-    @Positive
+    @NotNull(message = "Amount is required")
+    @Positive(message = "Amount must be strictly positive")
     private BigDecimal amount;
 
-    @NotNull
+    @NotNull(message = "Transaction type is required")
     private TransactionType type;
 
-    @NotNull
+    @NotNull(message = "Category is required")
     private Long categoryId;
 
-    @NotNull
+    @NotNull(message = "Transaction date is required")
     private LocalDate transactionDate;
 
     private PaymentMethod paymentMethod;
     private String merchantName;
+    private String description;
+    private String location;
+    private Boolean isRecurring = false;
 }

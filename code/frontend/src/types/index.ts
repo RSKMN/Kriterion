@@ -31,3 +31,22 @@ export interface RegisterRequest {
 export interface RefreshTokenRequest {
   refreshToken: string
 }
+
+export interface PageableResponse<T> {
+  content: T[]
+  pageable: {
+    pageNumber: number
+    pageSize: number
+  }
+  totalPages: number
+  totalElements: number
+  last: boolean
+  first: boolean
+  size: number
+  number: number
+  numberOfElements: number
+  empty: boolean
+}
+
+export * from './category'
+export * from './transaction'
