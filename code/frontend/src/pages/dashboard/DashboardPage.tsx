@@ -1,12 +1,15 @@
 import { RefreshCcw } from 'lucide-react'
-import { useEffect, useState } from 'react'
 
+import { CategoryBreakdownChart } from '@/components/dashboard/CategoryBreakdownChart'
 import { DashboardSummaryCards } from '@/components/dashboard/DashboardSummaryCards'
+import { InsightsPanel } from '@/components/dashboard/InsightsPanel'
+import { MonthlyTrendChart } from '@/components/dashboard/MonthlyTrendChart'
+import { PieChartCard } from '@/components/dashboard/PieChartCard'
+import { TopCategories } from '@/components/dashboard/TopCategories'
+import { WeeklyInsights } from '@/components/dashboard/WeeklyInsights'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { analyticsService } from '@/services/api'
-import { getApiErrorMessage } from '@/services/api/error'
-import type { DashboardSummary } from '@/types'
+import { useDashboardSummary } from '@/hooks/useDashboardSummary'
 
 function formatMonthLabel(month: string) {
   const parsedDate = new Date(`${month}-01T00:00:00`)
@@ -22,31 +25,7 @@ function formatCurrency(value: number) {
 }
 
 export default function DashboardPage() {
-  const [summary, setSummary] = useState<DashboardSummary | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  const loadSummary = async () => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const response = await analyticsService.getDashboardSummary()
-      if (response.success) {
-        setSummary(response.data)
-      } else {
-        setError(response.message)
-      }
-    } catch (requestError) {
-      setError(getApiErrorMessage(requestError))
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    void loadSummary()
-  }, [])
+  const { summary, loading, error, reload } = useDashboardSummary()
 
   return (
     <div className="space-y-8">
@@ -65,7 +44,7 @@ export default function DashboardPage() {
             <CardDescription>{error}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button type="button" onClick={() => void loadSummary()}>
+            <Button type="button" onClick={() => void reload()}>
               <RefreshCcw className="mr-2 h-4 w-4" />
               Retry
             </Button>
@@ -105,6 +84,38 @@ export default function DashboardPage() {
           </div>
         </section>
       ) : null}
+
+      <section className="space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold tracking-tight">Charts</h2>
+          <p className="text-sm text-muted-foreground">Visualize spending and trends.</p>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-3">
+          <div className="lg:col-span-1 space-y-4">
+            <PieChartCard />
+            <TopCategories />
+          </div>
+
+          <div className="lg:col-span-2 space-y-4">
+            <MonthlyTrendChart />
+            <CategoryBreakdownChart />
+          </div>
+        </div>
+      </section>
+
+      <section className="space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold tracking-tight">Insights</h2>
+          <p className="text-sm text-muted-foreground">Actionable takeaways from recent activity.</p>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-3">
+          <InsightsPanel />
+          <WeeklyInsights />
+          <TopCategories />
+        </div>
+      </section>
     </div>
   )
 }
