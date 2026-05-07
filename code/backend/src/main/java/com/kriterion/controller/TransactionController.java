@@ -27,6 +27,7 @@ public class TransactionController {
     @GetMapping
     public ResponseEntity<ApiResponse<Page<TransactionResponse>>> getTransactions(
             @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) com.kriterion.entity.enums.TransactionType type,
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
             @RequestParam(required = false) String search,
@@ -39,7 +40,7 @@ public class TransactionController {
                 : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<TransactionResponse> transactions = transactionService.getTransactions(categoryId, startDate, endDate, search, pageable);
+        Page<TransactionResponse> transactions = transactionService.getTransactions(categoryId, type, startDate, endDate, search, pageable);
         return ResponseEntity.ok(ApiResponse.success("Transactions retrieved successfully", transactions));
     }
 

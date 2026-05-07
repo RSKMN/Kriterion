@@ -21,6 +21,7 @@ interface TransactionState {
   pagination: PaginationState
   fetchTransactions: (params?: {
     categoryId?: string | number
+    type?: string
     startDate?: string
     endDate?: string
     search?: string

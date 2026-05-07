@@ -31,13 +31,16 @@ public class TransactionService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public Page<TransactionResponse> getTransactions(Long categoryId, LocalDate startDate, LocalDate endDate, String search, Pageable pageable) {
+    public Page<TransactionResponse> getTransactions(Long categoryId, com.kriterion.entity.enums.TransactionType type, LocalDate startDate, LocalDate endDate, String search, Pageable pageable) {
         Long userId = AuthenticationUtil.getAuthenticatedUserIdAsLong();
         if (userId == null) {
             throw new UnauthorizedException("User not authenticated");
         }
 
-        Page<Transaction> transactions = transactionRepository.findTransactionsWithFilters(userId, categoryId, startDate, endDate, search, pageable);
+        org.springframework.data.jpa.domain.Specification<Transaction> spec = 
+                com.kriterion.repository.specification.TransactionSpecification.withFilters(userId, categoryId, type, startDate, endDate, search);
+                
+        Page<Transaction> transactions = transactionRepository.findAll(spec, pageable);
         return transactions.map(this::mapToResponse);
     }
 

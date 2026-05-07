@@ -1,15 +1,14 @@
 package com.kriterion.dto.analytics;
 
 import java.math.BigDecimal;
-import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class DashboardSummaryResponse {
+public class MonthlySummaryResponse {
+    private String month;
     private BigDecimal totalIncome;
     private BigDecimal totalExpense;
     private BigDecimal remainingBalance;
-    private List<MonthlySummaryResponse> monthlySummary;
 }

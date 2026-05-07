@@ -12,6 +12,7 @@ const BASE_URL = '/api/v1/transactions'
 
 interface GetTransactionsParams {
   categoryId?: number | string
+  type?: string
   startDate?: string
   endDate?: string
   search?: string

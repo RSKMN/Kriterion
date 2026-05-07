@@ -72,7 +72,7 @@ export function CategoriesPage() {
       setIsDialogOpen(false)
       form.reset()
       setEditingCategory(null)
-    } catch (error) {
+    } catch {
       // Error is handled in store
     }
   }
