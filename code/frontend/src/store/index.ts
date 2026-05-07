@@ -1,5 +1,5 @@
 // Zustand store entrypoint. Keep stores small and feature-scoped.
-import create from 'zustand'
+import {create} from 'zustand'
 
 type AppState = {}
 
