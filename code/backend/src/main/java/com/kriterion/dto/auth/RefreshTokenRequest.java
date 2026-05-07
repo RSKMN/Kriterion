@@ -1,0 +1,20 @@
+package com.kriterion.dto.auth;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
+public class RefreshTokenRequest {
+    @NotBlank(message = "refreshToken is required")
+    private String refreshToken;
+}
+package com.kriterion.dto.auth;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
+public class RefreshTokenRequest {
+    @NotBlank
+    private String refreshToken;
+}

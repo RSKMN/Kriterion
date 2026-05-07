@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+set -e
+
+# Placeholder: keep pre-push lightweight and focused on fast safety checks.
+npm run prepush

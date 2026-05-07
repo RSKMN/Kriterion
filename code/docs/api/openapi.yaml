@@ -1,0 +1,7 @@
+openapi: 3.0.3
+info:
+  title: Kriterion API
+  version: 0.1.0
+paths: {}
+
+# Placeholder OpenAPI file. Populate controllers and DTOs in backend to generate a full spec.

@@ -1,0 +1,196 @@
+# Kriterion .gitignore
+# Comprehensive ignore rules for Spring Boot backend + React frontend monorepo
+
+# =============================================================================
+# Frontend (React + Vite)
+# =============================================================================
+code/frontend/node_modules/
+code/frontend/.pnp
+code/frontend/pnpm-lock.yaml
+code/frontend/yarn.lock
+code/frontend/package-lock.json
+code/frontend/dist/
+code/frontend/dist-ssr/
+code/frontend/.env
+code/frontend/.env.local
+code/frontend/.env.*.local
+code/frontend/coverage/
+code/frontend/.nyc_output/
+code/frontend/*.log
+code/frontend/npm-debug.log*
+code/frontend/yarn-debug.log*
+code/frontend/yarn-error.log*
+code/frontend/pnpm-debug.log*
+
+# =============================================================================
+# Backend (Spring Boot + Maven)
+# =============================================================================
+code/backend/target/
+code/backend/build/
+code/backend/.gradle/
+code/backend/out/
+code/backend/*.jar
+code/backend/*.war
+code/backend/*.rar
+
+# Build artifacts
+code/backend/.classpath
+code/backend/.project
+code/backend/.settings/
+code/backend/.idea/
+code/backend/*.iml
+code/backend/.vscode/
+
+# Maven
+code/backend/.m2/
+code/backend/pom.xml.versionsBackup
+
+# =============================================================================
+# IDE & Editor
+# =============================================================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.c9/
+*.iam-attributes
+*.log
+
+# =============================================================================
+# Environment Variables & Secrets
+# =============================================================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+.secrets/
+secrets.properties
+application-secrets.yml
+application-dev.yml
+application-prod.yml
+
+# =============================================================================
+# OS-Specific
+# =============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# =============================================================================
+# Node.js
+# =============================================================================
+node_modules/
+.npm
+.eslintcache
+.node_repl_history
+.npm-global/
+.cache/
+.cache
+
+# =============================================================================
+# Python (if used for scripts)
+# =============================================================================
+__pycache__/
+*.py[cod]
+*.so
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.venv/
+env/
+venv/
+ENV/
+.env
+
+# =============================================================================
+# Java
+# =============================================================================
+*.class
+*.log
+*.ctxt
+.mtj.tmp/
+*.jar
+*.war
+*.ner
+.sts4-cache/
+
+# =============================================================================
+# IntelliJ
+# =============================================================================
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# =============================================================================
+# Gradle
+# =============================================================================
+.gradle/
+build/
+gradlew
+gradlew.bat
+
+# =============================================================================
+# Maven
+# =============================================================================
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# =============================================================================
+# Database
+# =============================================================================
+*.db
+*.sqlite
+*.sqlite3
+*.sql
+!schema.sql
+.h2.server.properties
+
+# =============================================================================
+# Temporary Files
+# =============================================================================
+*.tmp
+*.bak
+*.backup
+*~
+.~*
+.swp
+.swo
+*#
+#*#
+
+# =============================================================================
+# OS-Specific
+# =============================================================================
+.vscode/settings.json
+.vscode/extensions.json
+
+# =============================================================================
+# Project-Specific
+# =============================================================================
+# Do not ignore (important for project structure)
+!.gitkeep
+!docs/
+!code/

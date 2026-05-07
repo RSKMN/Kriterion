@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+      - name: Build backend (Maven)
+        run: |
+          cd backend
+          mvn -B -DskipTests package
+      - name: Install frontend deps
+        run: |
+          cd frontend
+          npm ci
+
+# Minimal CI placeholder. Expand tests, linters, and caching as needed.
