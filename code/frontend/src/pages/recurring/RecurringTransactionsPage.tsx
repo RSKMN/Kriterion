@@ -29,7 +29,7 @@ export default function RecurringTransactionsPage() {
       } else {
         setError(response.message)
       }
-    } catch (err) {
+    } catch {
       setError('Failed to load recurring transactions. Please try again.')
     } finally {
       setLoading(false)
@@ -58,7 +58,7 @@ export default function RecurringTransactionsPage() {
       } else {
         toast.error(response.message)
       }
-    } catch (err) {
+    } catch {
       toast.error('An error occurred. Please try again.')
     } finally {
       setIsSubmitting(false)
@@ -76,7 +76,7 @@ export default function RecurringTransactionsPage() {
       } else {
         toast.error(response.message)
       }
-    } catch (err) {
+    } catch {
       toast.error('Failed to delete schedule')
     }
   }

@@ -1,0 +1,39 @@
+<div th:fragment="content">
+  <div style="text-align: center; margin-bottom: 24px">
+    <span
+      th:class="${'badge ' + (severity == 'CRITICAL' ? 'badge-critical' : 'badge-warning')}"
+      th:text="${severity}"
+      >WARNING</span
+    >
+  </div>
+  <h2 style="margin-top: 0; color: #1e293b" th:text="${title}">Budget Warning</h2>
+  <p style="font-size: 16px" th:text="${message}">Your food budget is nearing its limit.</p>
+
+  <div style="background: #f8fafc; border-radius: 8px; padding: 20px; margin-top: 24px">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 8px">
+      <span style="color: #64748b">Category</span>
+      <strong style="color: #0f172a" th:text="${categoryName}">Food</strong>
+    </div>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 8px">
+      <span style="color: #64748b">Monthly Limit</span>
+      <strong style="color: #0f172a" th:text="${limit}">$500.00</strong>
+    </div>
+    <div style="display: flex; justify-content: space-between">
+      <span style="color: #64748b">Current Spend</span>
+      <strong style="color: #0f172a" th:text="${spent}">$420.00</strong>
+    </div>
+    <hr />
+    <div style="display: flex; justify-content: space-between">
+      <span style="color: #64748b">Usage</span>
+      <strong
+        th:style="${'color: ' + (severity == 'CRITICAL' ? '#991b1b' : '#92400e')}"
+        th:text="${percentage + '%'}"
+        >84%</strong
+      >
+    </div>
+  </div>
+
+  <div style="text-align: center">
+    <a href="#" class="btn">View Dashboard</a>
+  </div>
+</div>

@@ -7,6 +7,8 @@ import com.kriterion.entity.RecurringTransaction;
 import com.kriterion.entity.Transaction;
 import com.kriterion.entity.User;
 import com.kriterion.exception.ApiException;
+import com.kriterion.event.KriterionEventPublisher;
+import com.kriterion.event.RecurringTransactionReminderEvent;
 import com.kriterion.repository.CategoryRepository;
 import com.kriterion.repository.RecurringTransactionRepository;
 import com.kriterion.repository.TransactionRepository;
@@ -30,6 +32,7 @@ public class RecurringTransactionService {
     private final TransactionRepository transactionRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+    private final KriterionEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
     public List<RecurringTransactionResponse> getAllRecurringTransactions() {
@@ -127,6 +130,22 @@ public class RecurringTransactionService {
         }
         
         log.info("Finished recurring transaction processing");
+    }
+
+    @Transactional
+    public void sendReminders() {
+        LocalDate horizon = LocalDate.now().plusDays(3);
+        List<RecurringTransaction> upcoming = recurringTransactionRepository.findAllByIsActiveTrueAndNextRunDateBefore(horizon.plusDays(1));
+        
+        log.info("Checking for upcoming recurring transactions to notify users. Horizon: {}", horizon);
+        
+        for (RecurringTransaction rt : upcoming) {
+            // We only send a reminder if it's within the next 3 days and hasn't been executed yet
+            if (rt.getNextRunDate().isAfter(LocalDate.now().minusDays(1))) {
+                eventPublisher.publishEvent(new RecurringTransactionReminderEvent(
+                        this, rt.getUser().getId(), rt.getTitle(), rt.getAmount(), rt.getNextRunDate()));
+            }
+        }
     }
 
     private void processRule(RecurringTransaction rule, LocalDate today) {

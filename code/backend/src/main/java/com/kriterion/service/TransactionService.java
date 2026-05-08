@@ -9,11 +9,14 @@ import com.kriterion.entity.User;
 import com.kriterion.exception.BadRequestException;
 import com.kriterion.exception.NotFoundException;
 import com.kriterion.exception.UnauthorizedException;
+import com.kriterion.event.KriterionEventPublisher;
+import com.kriterion.event.SuspiciousSpendingEvent;
 import com.kriterion.repository.CategoryRepository;
 import com.kriterion.repository.TransactionRepository;
 import com.kriterion.repository.UserRepository;
 import com.kriterion.security.util.AuthenticationUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,11 +27,14 @@ import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+    private final KriterionEventPublisher eventPublisher;
+    private final AnomalyDetectionService anomalyDetectionService;
 
     @Transactional(readOnly = true)
     public Page<TransactionResponse> getTransactions(Long categoryId, com.kriterion.entity.enums.TransactionType type, LocalDate startDate, LocalDate endDate, String search, Pageable pageable) {
@@ -75,6 +81,14 @@ public class TransactionService {
         transaction.setIsRecurring(request.getIsRecurring());
 
         transaction = transactionRepository.save(transaction);
+
+        // Perform anomaly detection
+        try {
+            anomalyDetectionService.detectAnomalies(transaction);
+        } catch (Exception e) {
+            log.error("Anomaly detection failed: {}", e.getMessage());
+        }
+
         return mapToResponse(transaction);
     }
 

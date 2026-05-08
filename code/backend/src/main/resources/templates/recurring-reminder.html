@@ -1,0 +1,26 @@
+<div th:fragment="content">
+  <div style="text-align: center; margin-bottom: 24px">
+    <span class="badge badge-info">REMINDER</span>
+  </div>
+  <h2 style="margin-top: 0; color: #1e293b" th:text="${title}">Upcoming Payment</h2>
+  <p style="font-size: 16px" th:text="${message}">You have a recurring payment due soon.</p>
+
+  <div style="background: #f8fafc; border-radius: 8px; padding: 20px; margin-top: 24px">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 8px">
+      <span style="color: #64748b">Description</span>
+      <strong style="color: #0f172a" th:text="${description}">Netflix Subscription</strong>
+    </div>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 8px">
+      <span style="color: #64748b">Amount</span>
+      <strong style="color: #0f172a" th:text="${amount}">$15.99</strong>
+    </div>
+    <div style="display: flex; justify-content: space-between">
+      <span style="color: #64748b">Due Date</span>
+      <strong style="color: #0f172a" th:text="${dueDate}">May 10, 2026</strong>
+    </div>
+  </div>
+
+  <div style="text-align: center">
+    <a href="#" class="btn">Manage Payments</a>
+  </div>
+</div>

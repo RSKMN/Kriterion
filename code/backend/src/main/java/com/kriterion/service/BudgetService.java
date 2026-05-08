@@ -6,12 +6,16 @@ import com.kriterion.dto.budget.BudgetStatusResponse;
 import com.kriterion.entity.Budget;
 import com.kriterion.entity.Category;
 import com.kriterion.exception.ApiException;
+import com.kriterion.event.BudgetExceededEvent;
+import com.kriterion.event.BudgetWarningEvent;
+import com.kriterion.event.KriterionEventPublisher;
 import com.kriterion.repository.BudgetRepository;
 import com.kriterion.repository.CategoryRepository;
 import com.kriterion.repository.TransactionRepository;
 import com.kriterion.security.util.AuthenticationUtil;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,6 +33,7 @@ public class BudgetService {
     private final BudgetRepository budgetRepository;
     private final TransactionRepository transactionRepository;
     private final CategoryRepository categoryRepository;
+    private final KriterionEventPublisher eventPublisher;
 
     @Transactional
     public BudgetResponse createBudget(BudgetRequest request) {
@@ -127,6 +132,36 @@ public class BudgetService {
                 .exceededBudgetsCount((int) exceeded)
                 .budgets(budgets)
                 .build();
+    }
+
+    @Transactional
+    public void evaluateBudgets(Long userId) {
+        LocalDate now = LocalDate.now();
+        List<Budget> budgets = budgetRepository.findByUserIdAndMonthAndYear(userId, now.getMonthValue(), now.getYear());
+        
+        for (Budget budget : budgets) {
+            BigDecimal spent = transactionRepository.calculateSpentAmount(
+                    budget.getUserId(), budget.getCategoryId(), budget.getMonth(), budget.getYear());
+            
+            BigDecimal limit = budget.getMonthlyLimit();
+            if (limit.compareTo(BigDecimal.ZERO) <= 0) continue;
+
+            BigDecimal percentage = spent.multiply(new BigDecimal(100)).divide(limit, 2, RoundingMode.HALF_UP);
+            int threshold = budget.getAlertThreshold() != null ? budget.getAlertThreshold() : 80;
+
+            String categoryName = "Overall";
+            if (budget.getCategoryId() != null) {
+                categoryName = categoryRepository.findById(budget.getCategoryId())
+                        .map(Category::getName)
+                        .orElse("Unknown Category");
+            }
+
+            if (percentage.compareTo(new BigDecimal(100)) >= 0) {
+                eventPublisher.publishEvent(new BudgetExceededEvent(this, userId, categoryName, limit, spent));
+            } else if (percentage.compareTo(new BigDecimal(threshold)) >= 0) {
+                eventPublisher.publishEvent(new BudgetWarningEvent(this, userId, categoryName, threshold, percentage));
+            }
+        }
     }
 
     private BudgetResponse mapToResponse(Budget budget) {

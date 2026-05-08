@@ -1,0 +1,40 @@
+<div th:fragment="content">
+  <div style="text-align: center; margin-bottom: 24px">
+    <span class="badge badge-critical">SECURITY ALERT</span>
+  </div>
+  <h2 style="margin-top: 0; color: #1e293b" th:text="${title}">Security Alert</h2>
+  <p style="font-size: 16px" th:text="${message}">
+    We detected a transaction that seems unusual based on your history.
+  </p>
+
+  <div
+    style="
+      background: #fee2e2;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 24px;
+      border: 1px solid #fecaca;
+    "
+  >
+    <div style="display: flex; justify-content: space-between; margin-bottom: 8px">
+      <span style="color: #991b1b">Merchant</span>
+      <strong style="color: #7f1d1d" th:text="${description}">Unknown Merchant</strong>
+    </div>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 8px">
+      <span style="color: #991b1b">Amount</span>
+      <strong style="color: #7f1d1d" th:text="${amount}">$5,200.00</strong>
+    </div>
+    <div style="display: flex; justify-content: space-between">
+      <span style="color: #991b1b">Reason</span>
+      <strong style="color: #7f1d1d" th:text="${reason}">High amount threshold</strong>
+    </div>
+  </div>
+
+  <p style="margin-top: 24px; font-size: 14px; color: #64748b">
+    If this was you, you can ignore this email. If not, please secure your account immediately.
+  </p>
+
+  <div style="text-align: center">
+    <a href="#" class="btn" style="background-color: #ef4444">Secure Account</a>
+  </div>
+</div>

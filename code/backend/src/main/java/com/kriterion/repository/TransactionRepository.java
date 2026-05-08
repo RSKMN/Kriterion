@@ -57,5 +57,20 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>,
                                     @Param("month") int month,
                                     @Param("year") int year);
 
+    @Query("""
+            SELECT COALESCE(SUM(t.amount), 0)
+            FROM Transaction t
+            WHERE t.user.id = :userId
+              AND t.type = com.kriterion.entity.enums.TransactionType.EXPENSE
+              AND YEAR(t.transactionDate) = :year
+              AND MONTH(t.transactionDate) = :month
+            """)
+    BigDecimal calculateTotalMonthlyExpense(@Param("userId") Long userId,
+                                           @Param("month") int month,
+                                           @Param("year") int year);
+
+    @Query("SELECT COUNT(t) FROM Transaction t WHERE t.user.id = :userId")
+    long countByUserId(@Param("userId") Long userId);
+
     boolean existsByRecurringTransactionIdAndTransactionDate(Long recurringTransactionId, java.time.LocalDate transactionDate);
 }
