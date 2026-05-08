@@ -8,6 +8,8 @@ import { DashboardSummaryCards } from '@/components/dashboard/DashboardSummaryCa
 import { InsightsPanel } from '@/components/dashboard/InsightsPanel'
 import { MonthlyTrendChart } from '@/components/dashboard/MonthlyTrendChart'
 import { PieChartCard } from '@/components/dashboard/PieChartCard'
+import { QuickScanWidget } from '@/components/dashboard/QuickScanWidget'
+import { RecentScansList } from '@/components/dashboard/RecentScansList'
 import { RecurringReminderWidget } from '@/components/dashboard/RecurringReminderWidget'
 import { TopCategories } from '@/components/dashboard/TopCategories'
 import { WeeklyInsights } from '@/components/dashboard/WeeklyInsights'
@@ -42,9 +44,12 @@ export default function DashboardPage() {
           </p>
         </section>
         
-        <div className="grid gap-4 sm:grid-cols-2 lg:w-[700px]">
-          <BudgetSummaryWidget />
-          <RecurringReminderWidget />
+        <div className="flex flex-col lg:flex-row gap-4 lg:w-auto">
+          <QuickScanWidget />
+          <div className="grid gap-4 sm:grid-cols-2 lg:w-[600px]">
+            <BudgetSummaryWidget />
+            <RecurringReminderWidget />
+          </div>
         </div>
       </div>
 
@@ -139,8 +144,8 @@ export default function DashboardPage() {
 
         <div className="grid gap-4 lg:grid-cols-3">
           <InsightsPanel />
+          <RecentScansList />
           <WeeklyInsights />
-          <TopCategories />
         </div>
       </section>
     </div>

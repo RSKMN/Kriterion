@@ -1,5 +1,6 @@
-import { Plus } from 'lucide-react'
+import { Plus, Receipt } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { TransactionFilterBar, TransactionFilters } from '@/components/TransactionFilterBar'
 import { TransactionForm } from '@/components/TransactionForm'
@@ -16,6 +17,7 @@ import { useTransactionStore } from '@/store/transaction.store'
 import { CreateTransactionRequest, Transaction } from '@/types'
 
 export default function TransactionsPage() {
+  const navigate = useNavigate()
   const { transactions, loading, fetchTransactions, createTransaction, updateTransaction, deleteTransaction, pagination } = useTransactionStore()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
@@ -63,25 +65,31 @@ export default function TransactionsPage() {
     <div className="container mx-auto py-8 px-4 max-w-6xl">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Transactions</h1>
-        <Dialog open={isDialogOpen} onOpenChange={handleOpenChange}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Transaction
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>{editingTransaction ? 'Edit Transaction' : 'Create Transaction'}</DialogTitle>
-            </DialogHeader>
-            <TransactionForm
-              initialData={editingTransaction}
-              onSubmit={handleSubmit}
-              onCancel={() => handleOpenChange(false)}
-              loading={loading}
-            />
-          </DialogContent>
-        </Dialog>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => navigate('/receipts')}>
+            <Receipt className="w-4 h-4 mr-2 text-indigo-600" />
+            Scan Receipt
+          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={handleOpenChange}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Transaction
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>{editingTransaction ? 'Edit Transaction' : 'Create Transaction'}</DialogTitle>
+              </DialogHeader>
+              <TransactionForm
+                initialData={editingTransaction}
+                onSubmit={handleSubmit}
+                onCancel={() => handleOpenChange(false)}
+                loading={loading}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <TransactionFilterBar 

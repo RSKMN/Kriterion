@@ -1,4 +1,4 @@
-import { ArrowRight, BarChart3, ShieldCheck, Wallet } from 'lucide-react';
+import { ArrowRight, BarChart3, Wallet, Receipt } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function LandingPage() {
@@ -81,11 +81,11 @@ export default function LandingPage() {
               bg: 'bg-indigo-400/10'
             },
             {
-              icon: ShieldCheck,
-              title: 'Bank-Grade Security',
-              description: 'Your data is protected with state-of-the-art JWT authentication and encryption.',
-              color: 'text-purple-400',
-              bg: 'bg-purple-400/10'
+              icon: Receipt,
+              title: 'Smart OCR Scanner',
+              description: 'Scan receipts instantly. Our on-device OCR extracts merchant, date, and amount automatically.',
+              color: 'text-emerald-400',
+              bg: 'bg-emerald-400/10'
             }
           ].map((feature, i) => (
             <div key={i} className="group p-8 rounded-3xl bg-slate-900/50 border border-slate-800/50 hover:bg-slate-800/50 transition-colors duration-500 backdrop-blur-sm">
