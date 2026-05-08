@@ -22,25 +22,3 @@ public class RegisterRequest {
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$", message = "password must contain at least one uppercase letter, one lowercase letter and one number")
     private String password;
 }
-package com.kriterion.dto.auth;
-
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.Data;
-
-@Data
-public class RegisterRequest {
-    @NotBlank
-    @Size(max = 100)
-    private String fullName;
-
-    @NotBlank
-    @Email
-    @Size(max = 150)
-    private String email;
-
-    @NotBlank
-    @Size(min = 8, max = 72)
-    private String password;
-}

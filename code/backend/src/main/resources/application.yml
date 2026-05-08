@@ -30,7 +30,7 @@ server:
 
 app:
   jwt:
-    secret: ${JWT_SECRET:change-me-in-production}
+    secret: ${JWT_SECRET:Kriterion_2026_Secure_JWT_Secret_Key_For_HS256_Auth_System}
     access-token-expiration-minutes: 60
     refresh-token-expiration-days: 30
 

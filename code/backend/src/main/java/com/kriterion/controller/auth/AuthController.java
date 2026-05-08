@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping({"/api/v1/auth", "/auth"})
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 @Validated
 public class AuthController {
@@ -46,17 +46,4 @@ public class AuthController {
         authService.revokeRefreshToken(request.getRefreshToken());
         return ResponseEntity.ok(ApiResponse.success("Logged out successfully", null));
     }
-}
-package com.kriterion.controller.auth;
-
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-@RequestMapping("/auth")
-public class AuthController {
-    // POST /api/v1/auth/login
-    // POST /api/v1/auth/register
-    // POST /api/v1/auth/refresh-token
-    // POST /api/v1/auth/logout
 }

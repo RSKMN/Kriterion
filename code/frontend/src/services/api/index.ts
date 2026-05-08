@@ -1,3 +1,6 @@
 export * from './client'
+export * from './category.service'
+export * from './transaction.service'
 export * from './analytics.service'
+export * from './budget.service'
 export * from './error'

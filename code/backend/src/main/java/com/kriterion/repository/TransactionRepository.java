@@ -42,4 +42,18 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>,
 
     @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.user.id = :userId")
     BigDecimal sumAmountByUserId(@Param("userId") Long userId);
+
+    @Query("""
+            SELECT COALESCE(SUM(t.amount), 0)
+            FROM Transaction t
+            WHERE t.user.id = :userId
+              AND t.type = com.kriterion.entity.enums.TransactionType.EXPENSE
+              AND (:categoryId IS NULL OR t.category.id = :categoryId)
+              AND YEAR(t.transactionDate) = :year
+              AND MONTH(t.transactionDate) = :month
+            """)
+    BigDecimal calculateSpentAmount(@Param("userId") Long userId,
+                                    @Param("categoryId") Long categoryId,
+                                    @Param("month") int month,
+                                    @Param("year") int year);
 }

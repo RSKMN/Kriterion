@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Requires authentication via JWT token.
  */
 @RestController
-@RequestMapping("/api/v1/protected")
+@RequestMapping("/protected")
 @Slf4j
 public class ProtectedController {
 

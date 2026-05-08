@@ -35,6 +35,7 @@ export default function RegisterPage() {
         navigate('/login')
       }
     } catch (err: any) {
+      console.error('Registration error caught:', err)
       setError(err.response?.data?.message || 'Registration failed')
     } finally {
       setLoading(false)

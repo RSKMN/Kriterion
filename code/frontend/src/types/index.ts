@@ -51,3 +51,4 @@ export interface PageableResponse<T> {
 export * from './category'
 export * from './analytics'
 export * from './transaction'
+export * from './budget'

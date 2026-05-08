@@ -9,18 +9,26 @@ services:
       - db_data:/var/lib/mysql
 
   backend:
-    build: ../backend/docker
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
     ports:
       - '8080:8080'
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/kriterion
+      - JWT_SECRET=Kriterion_2026_Secure_JWT_Secret_Key_For_HS256_Auth_System
     depends_on:
       - db
 
   frontend:
-    build: ../frontend
+    build:
+      context: ../frontend
+      dockerfile: ../docker/Dockerfile.frontend
     ports:
       - '5173:5173'
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
     depends_on:
       - backend
 

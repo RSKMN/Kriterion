@@ -18,6 +18,7 @@ interface CategoryDropdownProps {
   typeFilter?: CategoryType
   placeholder?: string
   disabled?: boolean
+  showOverallOption?: boolean
 }
 
 export function CategoryDropdown({
@@ -26,6 +27,7 @@ export function CategoryDropdown({
   typeFilter,
   placeholder = 'Select a category',
   disabled = false,
+  showOverallOption = false,
 }: CategoryDropdownProps) {
   const { categories, fetchCategories, loading } = useCategoryStore()
 
@@ -52,6 +54,12 @@ export function CategoryDropdown({
         <SelectValue placeholder={loading ? 'Loading...' : placeholder} />
       </SelectTrigger>
       <SelectContent>
+        {showOverallOption && (
+          <SelectGroup>
+            <SelectItem value="overall">Overall Budget</SelectItem>
+          </SelectGroup>
+        )}
+        
         {defaultCategories.length > 0 && (
           <SelectGroup>
             <SelectLabel>System Categories</SelectLabel>

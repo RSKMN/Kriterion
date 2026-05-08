@@ -41,7 +41,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
 
             if (!rateLimiter.isAllowed(clientIp)) {
                 // Rate limit exceeded
-                response.setStatus(HttpServletResponse.SC_TOO_MANY_REQUESTS);
+                response.setStatus(429);
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
                 ApiResponse<Object> errorResponse = ApiResponse.<Object>builder()

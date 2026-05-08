@@ -4,6 +4,9 @@ import com.kriterion.dto.auth.AuthResponse;
 import com.kriterion.entity.User;
 import com.kriterion.repository.RefreshTokenRepository;
 import com.kriterion.repository.UserRepository;
+import com.kriterion.security.jwt.JwtProperties;
+import com.kriterion.security.jwt.JwtTokenService;
+import com.kriterion.security.ratelimit.RateLimiter;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,8 +19,9 @@ public class AuthServiceLoginTest {
     private UserRepository userRepository;
     private RefreshTokenRepository refreshTokenRepository;
     private PasswordEncoder passwordEncoder;
-    private com.kriterion.security.jwt.JwtTokenService jwtTokenService;
-    private com.kriterion.security.jwt.JwtProperties jwtProperties;
+    private JwtTokenService jwtTokenService;
+    private JwtProperties jwtProperties;
+    private RateLimiter rateLimiter;
     private AuthService authService;
 
     @BeforeEach
@@ -25,10 +29,11 @@ public class AuthServiceLoginTest {
         userRepository = Mockito.mock(UserRepository.class);
         refreshTokenRepository = Mockito.mock(RefreshTokenRepository.class);
         passwordEncoder = Mockito.mock(PasswordEncoder.class);
-        jwtTokenService = Mockito.mock(com.kriterion.security.jwt.JwtTokenService.class);
-        jwtProperties = new com.kriterion.security.jwt.JwtProperties();
+        jwtTokenService = Mockito.mock(JwtTokenService.class);
+        jwtProperties = new JwtProperties();
         jwtProperties.setRefreshTokenExpirationDays(7);
-        authService = new AuthService(userRepository, passwordEncoder, jwtTokenService, refreshTokenRepository, jwtProperties);
+        rateLimiter = Mockito.mock(RateLimiter.class);
+        authService = new AuthService(userRepository, passwordEncoder, jwtTokenService, refreshTokenRepository, jwtProperties, rateLimiter);
     }
 
     @Test

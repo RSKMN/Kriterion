@@ -1,10 +1,9 @@
 import axios from 'axios'
 
-import { API_BASE_URL } from '@/constants'
 import { useAuthStore } from '@/store/auth.store'
 
 export const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: '/api',
   withCredentials: true,
 })
 

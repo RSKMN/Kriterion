@@ -1,6 +1,9 @@
 import { RefreshCcw } from 'lucide-react'
 
+import { BudgetHealthCard } from '@/components/dashboard/BudgetHealthCard'
+import { BudgetSummaryWidget } from '@/components/dashboard/BudgetSummaryWidget'
 import { CategoryBreakdownChart } from '@/components/dashboard/CategoryBreakdownChart'
+import { CategoryBudgetGrid } from '@/components/dashboard/CategoryBudgetGrid'
 import { DashboardSummaryCards } from '@/components/dashboard/DashboardSummaryCards'
 import { InsightsPanel } from '@/components/dashboard/InsightsPanel'
 import { MonthlyTrendChart } from '@/components/dashboard/MonthlyTrendChart'
@@ -29,13 +32,19 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <section className="space-y-2">
-        <p className="text-sm font-medium uppercase tracking-[0.25em] text-muted-foreground">Overview</p>
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Dashboard</h1>
-        <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">
-          See your income, spending, and balance at a glance.
-        </p>
-      </section>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <section className="space-y-2">
+          <p className="text-sm font-medium uppercase tracking-[0.25em] text-muted-foreground">Overview</p>
+          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Dashboard</h1>
+          <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">
+            See your income, spending, and balance at a glance.
+          </p>
+        </section>
+        
+        <div className="w-full sm:w-80">
+          <BudgetSummaryWidget />
+        </div>
+      </div>
 
       {error ? (
         <Card className="border-destructive/40 bg-destructive/5">
@@ -100,6 +109,22 @@ export default function DashboardPage() {
           <div className="lg:col-span-2 space-y-4">
             <MonthlyTrendChart />
             <CategoryBreakdownChart />
+          </div>
+        </div>
+      </section>
+
+      <section className="space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold tracking-tight">Budget tracking</h2>
+          <p className="text-sm text-muted-foreground">Monitor your spending limits and financial health.</p>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-3">
+          <div className="lg:col-span-1">
+            <BudgetHealthCard />
+          </div>
+          <div className="lg:col-span-2">
+            <CategoryBudgetGrid />
           </div>
         </div>
       </section>

@@ -8,7 +8,7 @@ import { ApiResponse } from '@/types'
 
 import { apiClient } from './client'
 
-const BASE_URL = '/api/v1/transactions'
+const BASE_URL = '/transactions'
 
 interface GetTransactionsParams {
   categoryId?: number | string

@@ -3,7 +3,7 @@ import { ApiResponse } from '@/types'
 
 import { apiClient } from './client'
 
-const BASE_URL = '/api/v1/categories'
+const BASE_URL = '/categories'
 
 export const categoryService = {
   getAll: async (): Promise<ApiResponse<Category[]>> => {
