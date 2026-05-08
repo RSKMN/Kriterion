@@ -56,4 +56,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>,
                                     @Param("categoryId") Long categoryId,
                                     @Param("month") int month,
                                     @Param("year") int year);
+
+    boolean existsByRecurringTransactionIdAndTransactionDate(Long recurringTransactionId, java.time.LocalDate transactionDate);
 }

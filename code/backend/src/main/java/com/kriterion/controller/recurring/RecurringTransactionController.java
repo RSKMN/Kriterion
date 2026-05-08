@@ -1,10 +1,45 @@
 package com.kriterion.controller.recurring;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.kriterion.dto.recurring.RecurringTransactionRequest;
+import com.kriterion.dto.recurring.RecurringTransactionResponse;
+import com.kriterion.response.ApiResponse;
+import com.kriterion.service.RecurringTransactionService;
+import jakarta.validation.Valid;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/recurring-transactions")
+@RequiredArgsConstructor
 public class RecurringTransactionController {
-    // Recurring transaction endpoints reserved for later implementation.
+
+    private final RecurringTransactionService recurringTransactionService;
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<RecurringTransactionResponse>>> getAll() {
+        List<RecurringTransactionResponse> response = recurringTransactionService.getAllRecurringTransactions();
+        return ResponseEntity.ok(ApiResponse.success("Recurring transactions retrieved", response));
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<RecurringTransactionResponse>> create(@Valid @RequestBody RecurringTransactionRequest request) {
+        RecurringTransactionResponse response = recurringTransactionService.createRecurringTransaction(request);
+        return ResponseEntity.ok(ApiResponse.success("Recurring transaction created", response));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<RecurringTransactionResponse>> update(
+            @PathVariable Long id, 
+            @Valid @RequestBody RecurringTransactionRequest request) {
+        RecurringTransactionResponse response = recurringTransactionService.updateRecurringTransaction(id, request);
+        return ResponseEntity.ok(ApiResponse.success("Recurring transaction updated", response));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
+        recurringTransactionService.deleteRecurringTransaction(id);
+        return ResponseEntity.ok(ApiResponse.success("Recurring transaction deleted", null));
+    }
 }

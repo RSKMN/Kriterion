@@ -8,6 +8,7 @@ import { DashboardSummaryCards } from '@/components/dashboard/DashboardSummaryCa
 import { InsightsPanel } from '@/components/dashboard/InsightsPanel'
 import { MonthlyTrendChart } from '@/components/dashboard/MonthlyTrendChart'
 import { PieChartCard } from '@/components/dashboard/PieChartCard'
+import { RecurringReminderWidget } from '@/components/dashboard/RecurringReminderWidget'
 import { TopCategories } from '@/components/dashboard/TopCategories'
 import { WeeklyInsights } from '@/components/dashboard/WeeklyInsights'
 import { Button } from '@/components/ui/button'
@@ -32,8 +33,8 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <section className="space-y-2">
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <section className="space-y-2 flex-1">
           <p className="text-sm font-medium uppercase tracking-[0.25em] text-muted-foreground">Overview</p>
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Dashboard</h1>
           <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">
@@ -41,8 +42,9 @@ export default function DashboardPage() {
           </p>
         </section>
         
-        <div className="w-full sm:w-80">
+        <div className="grid gap-4 sm:grid-cols-2 lg:w-[700px]">
           <BudgetSummaryWidget />
+          <RecurringReminderWidget />
         </div>
       </div>
 

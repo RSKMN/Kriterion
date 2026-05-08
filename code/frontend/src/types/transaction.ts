@@ -2,11 +2,9 @@ import { ID, CategoryType } from './index'
 
 export enum PaymentMethod {
   CASH = 'CASH',
-  CREDIT_CARD = 'CREDIT_CARD',
-  DEBIT_CARD = 'DEBIT_CARD',
+  UPI = 'UPI',
+  CARD = 'CARD',
   BANK_TRANSFER = 'BANK_TRANSFER',
-  PAYPAL = 'PAYPAL',
-  CRYPTO = 'CRYPTO',
   OTHER = 'OTHER',
 }
 

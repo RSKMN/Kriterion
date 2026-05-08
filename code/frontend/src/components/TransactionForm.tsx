@@ -51,7 +51,7 @@ export function TransactionForm({ initialData, onSubmit, onCancel, loading }: Tr
       type: initialData?.type || CategoryType.EXPENSE,
       categoryId: initialData?.categoryId?.toString() || '',
       transactionDate: initialData?.transactionDate || new Date().toISOString().split('T')[0],
-      paymentMethod: initialData?.paymentMethod || PaymentMethod.CREDIT_CARD,
+      paymentMethod: initialData?.paymentMethod || PaymentMethod.CARD,
       merchantName: initialData?.merchantName || '',
       description: initialData?.description || '',
     },

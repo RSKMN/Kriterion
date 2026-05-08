@@ -6,6 +6,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,11 +25,13 @@ import lombok.Setter;
 @Table(name = "recurring_transactions")
 public class RecurringTransaction extends BaseEntity {
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
+    @jakarta.persistence.JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(name = "category_id", nullable = false)
-    private Long categoryId;
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
+    @jakarta.persistence.JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
     @Column(nullable = false, length = 255)
     private String title;
@@ -42,6 +47,10 @@ public class RecurringTransaction extends BaseEntity {
     @Column(name = "recurrence_type", nullable = false, length = 20)
     private RecurrenceType recurrenceType;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method", length = 50)
+    private com.kriterion.entity.enums.PaymentMethod paymentMethod;
+
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
@@ -55,5 +64,5 @@ public class RecurringTransaction extends BaseEntity {
     private Integer reminderDaysBefore;
 
     @Column(name = "is_active")
-    private Boolean isActive;
+    private Boolean isActive = true;
 }
