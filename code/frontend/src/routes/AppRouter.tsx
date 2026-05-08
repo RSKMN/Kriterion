@@ -16,6 +16,7 @@ const AnalyticsPage = lazy(() => import('@/pages/analytics/AnalyticsPage'))
 const SettingsPage = lazy(() => import('@/pages/settings/SettingsPage'))
 const ReceiptScannerPage = lazy(() => import('@/pages/receipts/ReceiptScannerPage'))
 const NotificationsPage = lazy(() => import('@/pages/NotificationsPage'))
+const ReportsPage = lazy(() => import('@/pages/ReportsPage'))
 
 export function AppRouter() {
   return (
@@ -39,6 +40,7 @@ export function AppRouter() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/receipts" element={<ReceiptScannerPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/reports" element={<ReportsPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

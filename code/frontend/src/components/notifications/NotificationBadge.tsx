@@ -1,8 +1,8 @@
 import React from 'react';
 
+import { cn } from '@/lib/utils';
 import { useNotificationsStore } from '@/store/notifications.store';
 
-import { cn } from '@/lib/utils';
 
 interface NotificationBadgeProps {
   className?: string;

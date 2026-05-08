@@ -10,9 +10,9 @@ import {
 import React from 'react';
 
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { Notification } from '@/types/notification';
 
-import { cn } from '@/lib/utils';
 
 interface NotificationCardProps {
   notification: Notification;
