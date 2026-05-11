@@ -1,7 +1,7 @@
 package com.kriterion.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kriterion.response.ErrorResponse;
+import com.kriterion.dto.shared.ErrorResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -1,7 +1,7 @@
 package com.kriterion.security.ratelimit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kriterion.response.ApiResponse;
+import com.kriterion.dto.shared.ApiResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,46 +26,36 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     private final RateLimiter rateLimiter;
     private final ObjectMapper objectMapper;
 
-    private static final String[] PROTECTED_PATHS = {
-            "/auth/login",
-            "/auth/register",
-            "/auth/refresh-token"
-    };
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        // Only apply rate limiting to specific auth endpoints
-        if (isProtectedPath(request.getRequestURI())) {
-            String clientIp = getClientIp(request);
+        
+        String uri = request.getRequestURI();
+        String clientIp = getClientIp(request);
+        boolean allowed = true;
 
-            if (!rateLimiter.isAllowed(clientIp)) {
-                // Rate limit exceeded
-                response.setStatus(429);
-                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        if (uri.contains("/auth/login") || uri.contains("/auth/register")) {
+            allowed = rateLimiter.isAllowed(clientIp + ":auth", 5, java.util.concurrent.TimeUnit.MINUTES.toMillis(1));
+        } else if (uri.contains("/auth/refresh-token")) {
+            allowed = rateLimiter.isAllowed(clientIp + ":refresh", 10, java.util.concurrent.TimeUnit.MINUTES.toMillis(1));
+        } else if (uri.contains("/ocr/upload")) {
+            allowed = rateLimiter.isAllowed(clientIp + ":ocr", 3, java.util.concurrent.TimeUnit.MINUTES.toMillis(1));
+        } else if (uri.startsWith("/api/")) {
+            allowed = rateLimiter.isAllowed(clientIp + ":api", 100, java.util.concurrent.TimeUnit.MINUTES.toMillis(1));
+        }
 
-                ApiResponse<Object> errorResponse = ApiResponse.<Object>builder()
-                        .success(false)
-                        .message("Too many requests. Please try again later.")
-                        .data(null)
-                        .build();
-
-                objectMapper.writeValue(response.getWriter(), errorResponse);
-                return;
-            }
+        if (!allowed) {
+            response.setStatus(429);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            ApiResponse<Object> errorResponse = ApiResponse.<Object>builder()
+                    .success(false)
+                    .message("Too many requests. Please try again later.")
+                    .build();
+            objectMapper.writeValue(response.getWriter(), errorResponse);
+            return;
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    private boolean isProtectedPath(String requestUri) {
-        for (String path : PROTECTED_PATHS) {
-            // Match path with or without context prefix
-            if (requestUri.endsWith(path) || requestUri.contains(path)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private String getClientIp(HttpServletRequest request) {

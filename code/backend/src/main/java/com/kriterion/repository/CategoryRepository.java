@@ -22,4 +22,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     Optional<Category> findByIdAndUserId(Long id, Long userId);
     
     List<Category> findByType(CategoryType type);
+
+    List<Category> findByUserIdAndUpdatedAtAfter(Long userId, java.time.LocalDateTime updatedAt);
+    List<Category> findByUserIdAndDeletedAtAfter(Long userId, java.time.LocalDateTime deletedAt);
 }

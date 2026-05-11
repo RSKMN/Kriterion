@@ -1,7 +1,7 @@
 package com.kriterion.controller.backup;
 
 import com.kriterion.entity.BackupMetadata;
-import com.kriterion.response.ApiResponse;
+import com.kriterion.dto.shared.ApiResponse;
 import com.kriterion.service.BackupService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/backups")
 @RequiredArgsConstructor
-@Tag(name = "Backup", description = "Endpoints for data backup and recovery")
+@Tag(name = "System", description = "Endpoints for service health, monitoring, and data backups.")
 public class BackupController {
 
     private final BackupService backupService;

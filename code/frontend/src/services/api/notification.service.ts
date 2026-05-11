@@ -5,7 +5,8 @@ import { apiClient } from './client';
 export const notificationService = {
   getNotifications: async () => {
     const response = await apiClient.get<any>('/notifications');
-    return response.data.data as Notification[];
+    // The backend now returns a PageResponse inside ApiResponse.data
+    return response.data.data.content as Notification[];
   },
 
   getUnreadCount: async () => {

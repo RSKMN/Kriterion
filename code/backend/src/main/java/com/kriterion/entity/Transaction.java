@@ -70,4 +70,9 @@ public class Transaction extends BaseEntity {
 
     @Column(name = "merchant_name", length = 255)
     private String merchantName;
+
+    @jakarta.persistence.ElementCollection
+    @jakarta.persistence.CollectionTable(name = "transaction_tags", joinColumns = @jakarta.persistence.JoinColumn(name = "transaction_id"))
+    @Column(name = "tag")
+    private java.util.Set<String> tags = new java.util.HashSet<>();
 }

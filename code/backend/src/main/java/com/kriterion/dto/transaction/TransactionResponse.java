@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 public class TransactionResponse {
     private Long id;
+    private String clientUuid;
     private Long userId;
     private Long categoryId;
     private String categoryName;
@@ -33,7 +34,9 @@ public class TransactionResponse {
     
     private String location;
     private String merchantName;
+    private java.util.Set<String> tags;
     
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long version;
 }

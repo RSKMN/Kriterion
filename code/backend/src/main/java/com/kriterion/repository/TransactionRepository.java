@@ -1,6 +1,8 @@
 package com.kriterion.repository;
 
 import com.kriterion.entity.Transaction;
+import com.kriterion.repository.projection.DashboardBalanceProjection;
+import com.kriterion.repository.projection.MonthlyBalanceProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,14 +13,13 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
-
-import com.kriterion.repository.projection.DashboardBalanceProjection;
-import com.kriterion.repository.projection.MonthlyBalanceProjection;
+import java.util.Optional;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long>, JpaSpecificationExecutor<Transaction> {
 
     Page<Transaction> findByUserId(Long userId, Pageable pageable);
+    List<Transaction> findAllByUserId(Long userId);
 
     @Query("""
              SELECT COALESCE(SUM(CASE WHEN t.type = com.kriterion.entity.enums.TransactionType.INCOME THEN t.amount ELSE NULL END), 0) AS totalIncome,
@@ -73,4 +74,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>,
     long countByUserId(@Param("userId") Long userId);
 
     boolean existsByRecurringTransactionIdAndTransactionDate(Long recurringTransactionId, java.time.LocalDate transactionDate);
+
+    List<Transaction> findByUserIdAndUpdatedAtAfter(Long userId, java.time.LocalDateTime updatedAt);
+    List<Transaction> findByUserIdAndDeletedAtAfter(Long userId, java.time.LocalDateTime deletedAt);
+    
+    Optional<Transaction> findByClientUuid(String clientUuid);
 }

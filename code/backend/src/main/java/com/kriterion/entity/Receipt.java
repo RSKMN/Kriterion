@@ -1,48 +1,48 @@
 package com.kriterion.entity;
 
 import com.kriterion.entity.enums.OcrStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "receipts")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "receipts")
+@Builder
 public class Receipt extends BaseEntity {
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(name = "image_url", nullable = false, columnDefinition = "TEXT")
-    private String imageUrl;
+    @Column(name = "file_id", nullable = false, unique = true)
+    private String fileId;
 
-    @Column(name = "extracted_text", columnDefinition = "LONGTEXT")
-    private String extractedText;
+    @Column(name = "file_name")
+    private String fileName;
+
+    @Column(name = "storage_path")
+    private String storagePath;
+
+    @Column(name = "content_type")
+    private String contentType;
+
+    @Column(name = "file_size")
+    private Long fileSize;
+
+    @Column(name = "checksum")
+    private String checksum;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "ocr_status", length = 20)
-    private OcrStatus ocrStatus;
+    @Column(name = "ocr_status")
+    private OcrStatus ocrStatus = OcrStatus.PENDING;
 
-    @Column(name = "extracted_merchant", length = 255)
-    private String extractedMerchant;
+    @Column(name = "raw_ocr_data", columnDefinition = "TEXT")
+    private String rawOcrData;
 
-    @Column(name = "extracted_amount", precision = 12, scale = 2)
-    private BigDecimal extractedAmount;
-
-    @Column(name = "extracted_date")
-    private LocalDate extractedDate;
-
-    @Column(name = "confidence_score", precision = 5, scale = 2)
-    private BigDecimal confidenceScore;
+    @Column(name = "processed_at")
+    private LocalDateTime processedAt;
 }

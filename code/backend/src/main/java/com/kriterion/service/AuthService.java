@@ -16,7 +16,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class AuthService {
 
@@ -26,6 +25,26 @@ public class AuthService {
     private final com.kriterion.repository.RefreshTokenRepository refreshTokenRepository;
     private final com.kriterion.security.jwt.JwtProperties jwtProperties;
     private final RateLimiter rateLimiter;
+    private final com.kriterion.service.mobile.MobileService mobileService;
+    private final com.kriterion.service.SessionService sessionService;
+
+    public AuthService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder,
+                       com.kriterion.security.jwt.JwtTokenService jwtTokenService,
+                       com.kriterion.repository.RefreshTokenRepository refreshTokenRepository,
+                       com.kriterion.security.jwt.JwtProperties jwtProperties,
+                       RateLimiter rateLimiter,
+                       com.kriterion.service.mobile.MobileService mobileService,
+                       com.kriterion.service.SessionService sessionService) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtTokenService = jwtTokenService;
+        this.refreshTokenRepository = refreshTokenRepository;
+        this.jwtProperties = jwtProperties;
+        this.rateLimiter = rateLimiter;
+        this.mobileService = mobileService;
+        this.sessionService = sessionService;
+    }
 
     @Transactional
     public Long register(RegisterRequest request) {
@@ -48,43 +67,54 @@ public class AuthService {
     }
 
     @Transactional
+    public com.kriterion.dto.auth.AuthResponse login(com.kriterion.dto.auth.LoginRequest request) {
+        return loginInternal(request.getEmail(), request.getPassword(), request.getDevice());
+    }
+
+    @Transactional
     public com.kriterion.dto.auth.AuthResponse login(String email, String password) {
+        return loginInternal(email, password, null);
+    }
+
+    private com.kriterion.dto.auth.AuthResponse loginInternal(String email, String password, com.kriterion.dto.mobile.DeviceMetadata device) {
         String normalized = email.toLowerCase().trim();
         String clientIp = getClientIp();
 
-        // Attempt to find user (don't expose non-existence to attacker)
+        // Attempt to find user
         java.util.Optional<User> userOpt = userRepository.findByEmail(normalized);
 
         if (userOpt.isEmpty()) {
-            // User doesn't exist - still perform dummy password check for timing resistance
             PasswordSecurityUtil.verifyPassword(password, "$2a$12$dummy", passwordEncoder);
-            log.warn("Login attempt for non-existent email: {}", normalized);
             throw new ApiException(PasswordSecurityUtil.getGenericAuthError(), HttpStatus.UNAUTHORIZED);
         }
 
         User user = userOpt.get();
 
-        // Verify password using timing-safe method
         if (!PasswordSecurityUtil.verifyPassword(password, user.getPasswordHash(), passwordEncoder)) {
-            log.warn("Failed login attempt for email={}, ip={}", normalized, clientIp);
             throw new ApiException(PasswordSecurityUtil.getGenericAuthError(), HttpStatus.UNAUTHORIZED);
         }
 
         String subject = String.valueOf(user.getId());
         String accessToken = jwtTokenService.generateAccessToken(subject);
-        String refreshToken = jwtTokenService.generateRefreshToken(subject);
+        String refreshToken;
 
-        // persist refresh token with expiration based on configured properties
-        com.kriterion.entity.RefreshToken rt = new com.kriterion.entity.RefreshToken();
-        rt.setUserId(user.getId());
-        rt.setToken(refreshToken);
-        rt.setExpiresAt(java.time.LocalDateTime.now().plusDays(jwtProperties.getRefreshTokenExpirationDays()));
-        rt.setRevoked(false);
-        refreshTokenRepository.save(rt);
+        // MOBILITY: Create session if device info is provided
+        if (device != null) {
+            if (device.getIpAddress() == null) device.setIpAddress(clientIp);
+            refreshToken = sessionService.createSession(user, device);
+        } else {
+            // Web/Standard Refresh Token
+            refreshToken = jwtTokenService.generateRefreshToken(subject);
+            com.kriterion.entity.RefreshToken rt = new com.kriterion.entity.RefreshToken();
+            rt.setUser(user);
+            rt.setToken(refreshToken);
+            rt.setExpiryDate(java.time.Instant.now().plus(jwtProperties.getRefreshTokenExpirationDays(), java.time.temporal.ChronoUnit.DAYS));
+            rt.setRevoked(false);
+            refreshTokenRepository.save(rt);
+        }
 
-        // Reset rate limit on successful login
         rateLimiter.reset(clientIp);
-        log.info("User logged in successfully: id={}, ip={}", user.getId(), clientIp);
+        log.info("User logged in successfully: id={}, ip={}, mobile={}", user.getId(), clientIp, device != null);
 
         com.kriterion.dto.user.UserResponse userResp = com.kriterion.dto.user.UserResponse.builder()
                 .id(user.getId())
@@ -99,37 +129,27 @@ public class AuthService {
     public void revokeRefreshToken(String token) {
         refreshTokenRepository.findByToken(token).ifPresent(rt -> {
             rt.setRevoked(true);
+            if (rt.getSession() != null) {
+                sessionService.revokeSession(rt.getSession().getId());
+            }
             refreshTokenRepository.save(rt);
-            log.info("Refresh token revoked for userId={}", rt.getUserId());
+            log.info("Refresh token revoked for userId={}", rt.getUser().getId());
         });
     }
 
     @Transactional
-    public String refreshAccessToken(String refreshToken) {
-        // validate presence
-        com.kriterion.entity.RefreshToken stored = refreshTokenRepository.findByToken(refreshToken)
-                .orElseThrow(() -> new ApiException("Invalid refresh token", org.springframework.http.HttpStatus.UNAUTHORIZED));
+    public com.kriterion.dto.auth.TokenRefreshResponse refreshAccessToken(String refreshToken) {
+        String newRefreshToken = sessionService.refreshSession(refreshToken);
+        
+        com.kriterion.entity.RefreshToken rt = refreshTokenRepository.findByToken(newRefreshToken)
+                .orElseThrow(() -> new ApiException("Token refresh failed", HttpStatus.INTERNAL_SERVER_ERROR));
 
-        if (Boolean.TRUE.equals(stored.getRevoked())) {
-            log.warn("Attempt to use revoked refresh token id={}", stored.getId());
-            throw new ApiException("Invalid refresh token", org.springframework.http.HttpStatus.UNAUTHORIZED);
-        }
-
-        if (stored.getExpiresAt().isBefore(java.time.LocalDateTime.now())) {
-            log.warn("Attempt to use expired refresh token id={}", stored.getId());
-            throw new ApiException("Invalid refresh token", org.springframework.http.HttpStatus.UNAUTHORIZED);
-        }
-
-        // validate JWT signature/expiry
-        if (!jwtTokenService.isTokenValid(refreshToken)) {
-            throw new ApiException("Invalid refresh token", org.springframework.http.HttpStatus.UNAUTHORIZED);
-        }
-
-        String subject = jwtTokenService.extractSubject(refreshToken);
-        // create new access token
-        String newAccess = jwtTokenService.generateAccessToken(subject);
-        log.info("Refresh token used for userId={}", subject);
-        return newAccess;
+        String accessToken = jwtTokenService.generateAccessToken(String.valueOf(rt.getUser().getId()));
+        
+        return com.kriterion.dto.auth.TokenRefreshResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(newRefreshToken)
+                .build();
     }
 
     /**

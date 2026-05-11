@@ -33,8 +33,11 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
-    private final KriterionEventPublisher eventPublisher;
+    private final com.kriterion.event.KriterionEventPublisher eventPublisher;
     private final AnomalyDetectionService anomalyDetectionService;
+    private final com.kriterion.service.intelligence.CategorizationService categorizationService;
+    private final com.kriterion.service.intelligence.CategorizationLearningService learningService;
+    private final com.kriterion.service.intelligence.ContextInferenceEngine contextInferenceEngine;
 
     @Transactional(readOnly = true)
     public Page<TransactionResponse> getTransactions(Long categoryId, com.kriterion.entity.enums.TransactionType type, LocalDate startDate, LocalDate endDate, String search, Pageable pageable) {
@@ -60,7 +63,22 @@ public class TransactionService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
-        Category category = categoryRepository.findById(request.getCategoryId())
+        Long effectiveCategoryId = request.getCategoryId();
+        boolean learnedOrRuleBased = false;
+        
+        // INTELLIGENCE: Auto-categorize if category is missing (null) or set to "Uncategorized" (ID 1)
+        if (effectiveCategoryId == null || effectiveCategoryId == 1L) {
+            com.kriterion.service.intelligence.CategorizationService.CategorizationResult autoCat = 
+                    categorizationService.categorize(request.getMerchantName() != null ? request.getMerchantName() : request.getTitle(), userId);
+            if (autoCat.isRuleBased() || autoCat.isLearned() || autoCat.isSemantic() || autoCat.isLlm()) {
+                effectiveCategoryId = autoCat.getCategoryId();
+                learnedOrRuleBased = true;
+                log.info("Auto-categorized transaction '{}' to categoryId={} (confidence={}, learned={}, semantic={}, llm={})", 
+                        request.getTitle(), effectiveCategoryId, autoCat.getConfidence(), autoCat.isLearned(), autoCat.isSemantic(), autoCat.isLlm());
+            }
+        }
+
+        Category category = categoryRepository.findById(effectiveCategoryId != null ? effectiveCategoryId : 1L)
                 .orElseThrow(() -> new NotFoundException("Category not found"));
 
         if (category.getUser() != null && !category.getUser().getId().equals(userId)) {
@@ -79,8 +97,17 @@ public class TransactionService {
         transaction.setMerchantName(request.getMerchantName());
         transaction.setLocation(request.getLocation());
         transaction.setIsRecurring(request.getIsRecurring());
+        transaction.setAiCategorized(learnedOrRuleBased);
 
         transaction = transactionRepository.save(transaction);
+
+        // INTELLIGENCE: Infer higher-level context (subscriptions, behavior, tags)
+        contextInferenceEngine.inferContext(transaction);
+
+        // LEARNING: If user provided a specific category, learn this mapping
+        if (request.getCategoryId() != null && request.getCategoryId() != 1L) {
+            learningService.learn(userId, transaction.getMerchantName() != null ? transaction.getMerchantName() : transaction.getTitle(), request.getCategoryId());
+        }
 
         // Perform anomaly detection
         try {
@@ -111,6 +138,12 @@ public class TransactionService {
 
         if (category.getUser() != null && !category.getUser().getId().equals(userId)) {
             throw new UnauthorizedException("You do not have permission to use this category");
+        }
+
+        // LEARNING: If the category is being changed, treat it as a correction
+        if (!transaction.getCategory().getId().equals(request.getCategoryId())) {
+            learningService.learn(userId, transaction.getMerchantName() != null ? transaction.getMerchantName() : transaction.getTitle(), request.getCategoryId());
+            transaction.setAiCategorized(false); // User corrected it, no longer "AI" categorized
         }
 
         transaction.setCategory(category);
@@ -164,6 +197,7 @@ public class TransactionService {
                 .aiCategorized(transaction.getAiCategorized())
                 .location(transaction.getLocation())
                 .merchantName(transaction.getMerchantName())
+                .tags(new java.util.HashSet<>(transaction.getTags()))
                 .createdAt(transaction.getCreatedAt())
                 .updatedAt(transaction.getUpdatedAt())
                 .build();

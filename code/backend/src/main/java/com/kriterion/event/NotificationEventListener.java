@@ -21,6 +21,8 @@ public class NotificationEventListener {
 
     private final NotificationRepository notificationRepository;
     private final EmailService emailService;
+    private final com.kriterion.service.notification.NotificationDeliveryService notificationDeliveryService;
+    private final com.kriterion.repository.UserRepository userRepository;
 
     @EventListener
     @Transactional
@@ -56,7 +58,7 @@ public class NotificationEventListener {
         model.put("title", title);
         model.put("message", message);
         model.put("categoryName", event.getCategoryName());
-        model.put("limit", "N/A"); // Ideally we pass limit here too
+        model.put("limit", "N/A");
         model.put("spent", "N/A");
         model.put("percentage", event.getPercentage());
         model.put("severity", "WARNING");
@@ -114,5 +116,13 @@ public class NotificationEventListener {
 
         notificationRepository.save(notification);
         log.info("Saved notification for user: {}. Type: {}", userId, type);
+
+        // TRIGGER PUSH NOTIFICATION
+        userRepository.findById(userId).ifPresent(user -> {
+            Map<String, String> data = new HashMap<>();
+            data.put("type", type.name());
+            data.put("severity", severity.name());
+            notificationDeliveryService.sendToUser(user, title, message, data);
+        });
     }
 }

@@ -31,6 +31,14 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<NotificationResponse> getNotifications(org.springframework.data.domain.Pageable pageable) {
+        Long userId = AuthenticationUtil.getAuthenticatedUserIdAsLong();
+        return notificationRepository.findByUserId(userId, pageable)
+                .map(this::mapToResponse);
+    }
+
+    @Override
     @Transactional
     public void markAsRead(Long id) {
         Long userId = AuthenticationUtil.getAuthenticatedUserIdAsLong();

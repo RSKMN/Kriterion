@@ -84,6 +84,28 @@ public class AnalyticsService {
     }
 
     @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<MonthlySummaryResponse> getMonthlyHistory(org.springframework.data.domain.Pageable pageable) {
+        Long userId = requireAuthenticatedUserId();
+        // For history, we might want to go back further than 12 months.
+        // Let's assume we want to show all available months.
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusYears(10); // Far enough back
+
+        List<MonthlySummaryResponse> allTrends = buildMonthlySummary(userId, startDate, endDate);
+        // Sort descending by month
+        allTrends.sort((a, b) -> b.getMonthKey().compareTo(a.getMonthKey()));
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), allTrends.size());
+        
+        List<MonthlySummaryResponse> content = (start < allTrends.size()) 
+                ? allTrends.subList(start, end) 
+                : new ArrayList<>();
+                
+        return new org.springframework.data.domain.PageImpl<>(content, pageable, allTrends.size());
+    }
+
+    @Transactional(readOnly = true)
     public CategoryBreakdownResponse getCategoryBreakdown() {
         Long userId = requireAuthenticatedUserId();
         LocalDate today = LocalDate.now();

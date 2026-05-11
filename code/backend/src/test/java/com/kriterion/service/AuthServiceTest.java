@@ -22,6 +22,8 @@ public class AuthServiceTest {
     private RefreshTokenRepository refreshTokenRepository;
     private JwtProperties jwtProperties;
     private RateLimiter rateLimiter;
+    private com.kriterion.service.mobile.MobileService mobileService;
+    private com.kriterion.service.SessionService sessionService;
     private AuthService authService;
 
     @BeforeEach
@@ -33,7 +35,9 @@ public class AuthServiceTest {
         jwtProperties = new JwtProperties();
         jwtProperties.setRefreshTokenExpirationDays(7);
         rateLimiter = Mockito.mock(RateLimiter.class);
-        authService = new AuthService(userRepository, passwordEncoder, jwtTokenService, refreshTokenRepository, jwtProperties, rateLimiter);
+        mobileService = Mockito.mock(com.kriterion.service.mobile.MobileService.class);
+        sessionService = Mockito.mock(com.kriterion.service.SessionService.class);
+        authService = new AuthService(userRepository, passwordEncoder, jwtTokenService, refreshTokenRepository, jwtProperties, rateLimiter, mobileService, sessionService);
     }
 
     @Test

@@ -1,7 +1,8 @@
 FROM node:18-alpine
 WORKDIR /app
-COPY . .
+COPY package*.json ./
 RUN npm install
+COPY . .
 CMD [ "npm", "run", "dev" ]
 
 # Placeholder Dockerfile for the frontend app. Adapt for production build.

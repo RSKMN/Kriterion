@@ -2,6 +2,10 @@ package com.kriterion.service.export;
 
 import com.kriterion.analytics.AnalyticsService;
 import com.kriterion.dto.analytics.*;
+import com.kriterion.service.BudgetService;
+import com.kriterion.service.RecurringTransactionService;
+import com.kriterion.dto.budget.BudgetStatusResponse;
+import com.kriterion.dto.recurring.RecurringTransactionResponse;
 import com.lowagie.text.*;
 import com.lowagie.text.Font;
 import com.lowagie.text.pdf.PdfPCell;
@@ -10,7 +14,8 @@ import com.lowagie.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
+import java.awt.Color;
+import java.util.List;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -46,7 +51,7 @@ public class PdfReportService {
     }
 
     private byte[] generatePdf(String titleText, DashboardSummaryResponse summary, CategoryBreakdownResponse breakdown, 
-                              BudgetStatusResponse budgetStatus, List<com.kriterion.dto.recurring.RecurringTransactionResponse> recurring, String subtitle) {
+                               BudgetStatusResponse budgetStatus, List<RecurringTransactionResponse> recurring, String subtitle) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             Document document = new Document(PageSize.A4);
             PdfWriter.getInstance(document, baos);

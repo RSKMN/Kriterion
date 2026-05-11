@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @MappedSuperclass
+@NoArgsConstructor
 public abstract class BaseEntity {
 
     @Id
@@ -23,4 +25,13 @@ public abstract class BaseEntity {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    @Column(name = "client_uuid", unique = true, length = 64)
+    private String clientUuid;
+
+    @jakarta.persistence.Version
+    private Long version;
 }

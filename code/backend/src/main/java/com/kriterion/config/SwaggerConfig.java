@@ -14,8 +14,14 @@ public class SwaggerConfig {
 		return new OpenAPI()
 				.info(new Info()
 						.title("Kriterion API")
-						.version("v1")
-						.description("Kriterion backend API contract"))
+						.version("v1.0")
+						.description("Production-grade Financial Management API for Web and Mobile.")
+						.contact(new io.swagger.v3.oas.models.info.Contact()
+								.name("Kriterion Team")
+								.email("support@kriterion.app")))
+				.addServersItem(new io.swagger.v3.oas.models.servers.Server()
+						.url("/api/v1")
+						.description("Default Server URL"))
 				.addSecurityItem(new io.swagger.v3.oas.models.security.SecurityRequirement()
 						.addList(securitySchemeName))
 				.components(new io.swagger.v3.oas.models.Components()
@@ -24,6 +30,7 @@ public class SwaggerConfig {
 										.name(securitySchemeName)
 										.type(io.swagger.v3.oas.models.security.SecurityScheme.Type.HTTP)
 										.scheme("bearer")
-										.bearerFormat("JWT")));
+										.bearerFormat("JWT")
+										.description("Enter JWT token to access protected endpoints")));
 	}
 }

@@ -1,31 +1,40 @@
 package com.kriterion.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.Instant;
 
+@Entity
+@Table(name = "refresh_tokens")
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Entity
-@Table(name = "refresh_tokens")
 public class RefreshToken extends BaseEntity {
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
-
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, unique = true)
     private String token;
 
-    @Column(name = "expires_at", nullable = false)
-    private LocalDateTime expiresAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(name = "revoked")
-    private Boolean revoked;
+    @Column(nullable = false)
+    private Instant expiryDate;
+
+    @Column(nullable = false)
+    private boolean revoked = false;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "session_id")
+    private MobileSession session;
+
+    @Column(name = "device_id")
+    private String deviceId;
+
+    @Column(name = "replaced_by_token")
+    private String replacedByToken;
+
+    public boolean isExpired() {
+        return expiryDate.isBefore(Instant.now());
+    }
 }

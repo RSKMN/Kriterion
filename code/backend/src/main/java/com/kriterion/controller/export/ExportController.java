@@ -20,7 +20,7 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("/exports")
 @RequiredArgsConstructor
-@Tag(name = "Export", description = "Endpoints for exporting data and reports")
+@Tag(name = "Analytics", description = "Endpoints for financial insights, trends, and reports.")
 public class ExportController {
 
     private final CsvExportService csvExportService;

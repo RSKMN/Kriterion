@@ -21,22 +21,20 @@ public class RateLimiter {
 
     private final ConcurrentHashMap<String, RateLimitBucket> buckets = new ConcurrentHashMap<>();
 
-    // Configuration: 5 attempts per minute
-    private static final int MAX_ATTEMPTS = 5;
-    private static final long TIME_WINDOW_MS = TimeUnit.MINUTES.toMillis(1);
+    // Default global limits
+    private static final int DEFAULT_MAX_ATTEMPTS = 60;
+    private static final long DEFAULT_WINDOW_MS = TimeUnit.MINUTES.toMillis(1);
 
     /**
-     * Check if request is allowed for given IP.
-     * Returns true if within rate limit, false if exceeded.
+     * Check if request is allowed for given key (usually IP + endpoint).
      */
-    public boolean isAllowed(String clientIp) {
-        RateLimitBucket bucket = buckets.compute(clientIp, (key, existing) -> {
+    public boolean isAllowed(String key, int maxAttempts, long windowMs) {
+        RateLimitBucket bucket = buckets.compute(key, (k, existing) -> {
             if (existing == null) {
                 return new RateLimitBucket();
             }
             long elapsed = System.currentTimeMillis() - existing.resetTime;
-            if (elapsed > TIME_WINDOW_MS) {
-                // Reset bucket if time window expired
+            if (elapsed > windowMs) {
                 existing.count.set(0);
                 existing.resetTime = System.currentTimeMillis();
             }
@@ -44,42 +42,24 @@ public class RateLimiter {
         });
 
         int attempts = bucket.count.incrementAndGet();
-        if (attempts > MAX_ATTEMPTS) {
-            log.warn("Rate limit exceeded for IP: {} (attempts: {})", clientIp, attempts);
+        if (attempts > maxAttempts) {
+            log.warn("Rate limit exceeded for key: {} (attempts: {})", key, attempts);
             return false;
         }
         return true;
     }
 
-    /**
-     * Get remaining attempts for IP.
-     */
-    public int getRemainingAttempts(String clientIp) {
-        RateLimitBucket bucket = buckets.get(clientIp);
-        if (bucket == null) {
-            return MAX_ATTEMPTS;
-        }
-        long elapsed = System.currentTimeMillis() - bucket.resetTime;
-        if (elapsed > TIME_WINDOW_MS) {
-            return MAX_ATTEMPTS;
-        }
-        return Math.max(0, MAX_ATTEMPTS - bucket.count.get());
+    public boolean isAllowed(String clientIp) {
+        return isAllowed(clientIp, DEFAULT_MAX_ATTEMPTS, DEFAULT_WINDOW_MS);
     }
 
-    /**
-     * Reset rate limit for IP (called on successful auth).
-     */
-    public void reset(String clientIp) {
-        buckets.remove(clientIp);
+    public void reset(String key) {
+        buckets.remove(key);
     }
 
-    /**
-     * Periodic cleanup of expired buckets (call periodically).
-     */
-    public void cleanup() {
-        long now = System.currentTimeMillis();
-        buckets.entrySet().removeIf(entry -> 
-            (now - entry.getValue().resetTime) > (TIME_WINDOW_MS * 2)
-        );
+    public int getRemainingAttempts(String key) {
+        RateLimitBucket bucket = buckets.get(key);
+        if (bucket == null) return DEFAULT_MAX_ATTEMPTS;
+        return Math.max(0, DEFAULT_MAX_ATTEMPTS - bucket.count.get());
     }
 }

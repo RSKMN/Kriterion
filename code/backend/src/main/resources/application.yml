@@ -14,7 +14,7 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -50,6 +50,8 @@ app:
     secret: ${JWT_SECRET:Kriterion_2026_Secure_JWT_Secret_Key_For_HS256_Auth_System}
     access-token-expiration-minutes: 60
     refresh-token-expiration-days: 30
+  firebase:
+    config-path: ${FIREBASE_CONFIG_PATH:firebase-service-account.json}
 
 springdoc:
   api-docs:

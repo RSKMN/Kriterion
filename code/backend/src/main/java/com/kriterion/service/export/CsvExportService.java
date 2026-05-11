@@ -40,7 +40,7 @@ public class CsvExportService {
                     t.getAmount().toString(),
                     t.getType().toString(),
                     t.getCategory() != null ? t.getCategory().getName() : "N/A",
-                    t.getPaymentMethod() != null ? t.getPaymentMethod() : "N/A",
+                    t.getPaymentMethod() != null ? t.getPaymentMethod().toString() : "N/A",
                     t.getMerchantName() != null ? t.getMerchantName() : "N/A",
                     t.getDescription() != null ? t.getDescription() : ""
                 };
