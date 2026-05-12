@@ -19,6 +19,7 @@ import com.kriterion.repository.projection.MonthlyBalanceProjection;
 public interface TransactionRepository extends JpaRepository<Transaction, Long>, JpaSpecificationExecutor<Transaction> {
 
     Page<Transaction> findByUserId(Long userId, Pageable pageable);
+    List<Transaction> findByUserId(Long userId);
 
     @Query("""
              SELECT COALESCE(SUM(CASE WHEN t.type = com.kriterion.entity.enums.TransactionType.INCOME THEN t.amount ELSE NULL END), 0) AS totalIncome,

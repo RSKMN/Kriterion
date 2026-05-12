@@ -2,6 +2,9 @@ package com.kriterion.service.export;
 
 import com.kriterion.analytics.AnalyticsService;
 import com.kriterion.dto.analytics.*;
+import com.kriterion.dto.budget.BudgetStatusResponse;
+import com.kriterion.service.BudgetService;
+import com.kriterion.service.RecurringTransactionService;
 import com.lowagie.text.*;
 import com.lowagie.text.Font;
 import com.lowagie.text.pdf.PdfPCell;
@@ -10,11 +13,12 @@ import com.lowagie.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor

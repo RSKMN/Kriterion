@@ -27,6 +27,8 @@ public class CreateTransactionRequest {
     @NotNull(message = "Transaction date is required")
     private LocalDate transactionDate;
 
+    private java.time.LocalTime transactionTime;
+
     private PaymentMethod paymentMethod;
     private String merchantName;
     private String description;

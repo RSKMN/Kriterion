@@ -76,6 +76,7 @@ public class TransactionService {
         transaction.setDescription(request.getDescription());
         transaction.setPaymentMethod(request.getPaymentMethod());
         transaction.setTransactionDate(request.getTransactionDate());
+        transaction.setTransactionTime(request.getTransactionTime());
         transaction.setMerchantName(request.getMerchantName());
         transaction.setLocation(request.getLocation());
         transaction.setIsRecurring(request.getIsRecurring());
@@ -120,6 +121,7 @@ public class TransactionService {
         transaction.setDescription(request.getDescription());
         transaction.setPaymentMethod(request.getPaymentMethod());
         transaction.setTransactionDate(request.getTransactionDate());
+        transaction.setTransactionTime(request.getTransactionTime());
         transaction.setMerchantName(request.getMerchantName());
         transaction.setLocation(request.getLocation());
         transaction.setIsRecurring(request.getIsRecurring());
@@ -158,6 +160,7 @@ public class TransactionService {
                 .description(transaction.getDescription())
                 .paymentMethod(transaction.getPaymentMethod())
                 .transactionDate(transaction.getTransactionDate())
+                .transactionTime(transaction.getTransactionTime())
                 .isRecurring(transaction.getIsRecurring())
                 .recurringTransactionId(transaction.getRecurringTransactionId())
                 .receiptId(transaction.getReceiptId())

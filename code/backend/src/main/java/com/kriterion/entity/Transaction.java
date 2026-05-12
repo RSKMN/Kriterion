@@ -56,6 +56,9 @@ public class Transaction extends BaseEntity {
     @Column(name = "transaction_date", nullable = false)
     private LocalDate transactionDate;
 
+    @Column(name = "transaction_time")
+    private java.time.LocalTime transactionTime;
+
     @Column(name = "is_recurring")
     private Boolean isRecurring;
 

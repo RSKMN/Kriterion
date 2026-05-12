@@ -48,7 +48,7 @@ export const NotificationDropdown: React.FC = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-[380px] p-0" align="end">
-        <div className="flex items-center justify-between p-4 border-b border-slate-100">
+          <div className="flex items-center justify-between p-4 border-b border-slate-100">
           <div className="flex items-center gap-2">
             <h3 className="font-bold text-slate-900">Notifications</h3>
             {unreadCount > 0 && (
@@ -75,7 +75,7 @@ export const NotificationDropdown: React.FC = () => {
         </div>
         
         <ScrollArea className="h-[400px]">
-          {notifications.length === 0 ? (
+          {!notifications || notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-12 text-center">
               <div className="h-12 w-12 rounded-full bg-slate-50 flex items-center justify-center mb-4">
                 <Inbox className="h-6 w-6 text-slate-300" />

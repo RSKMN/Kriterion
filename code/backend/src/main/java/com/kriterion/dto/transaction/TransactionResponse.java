@@ -25,6 +25,7 @@ public class TransactionResponse {
     
     private PaymentMethod paymentMethod;
     private LocalDate transactionDate;
+    private java.time.LocalTime transactionTime;
     
     private Boolean isRecurring;
     private Long recurringTransactionId;

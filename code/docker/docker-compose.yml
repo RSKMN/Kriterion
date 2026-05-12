@@ -5,6 +5,11 @@ services:
     environment:
       MYSQL_DATABASE: kriterion
       MYSQL_ROOT_PASSWORD: changeme
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pchangeme"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - db_data:/var/lib/mysql
 
@@ -15,10 +20,12 @@ services:
     ports:
       - '8080:8080'
     environment:
+      - DB_URL=jdbc:mysql://db:3306/kriterion
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/kriterion
       - JWT_SECRET=Kriterion_2026_Secure_JWT_Secret_Key_For_HS256_Auth_System
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   frontend:
     build:

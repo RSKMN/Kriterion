@@ -7,6 +7,9 @@ const items = [
   { to: '/budgets', label: 'Budgets' },
   { to: '/recurring', label: 'Recurring' },
   { to: '/analytics', label: 'Analytics' },
+  { to: '/behavior-lite', label: 'Behavioral Insights Lite' },
+  { to: '/predict-lite', label: 'Predictive Analytics Lite' },
+  { to: '/financial-reflection', label: 'Financial Reflection' },
   { to: '/reports', label: 'Reports' },
   { to: '/settings', label: 'Settings' },
 ]

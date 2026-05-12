@@ -17,6 +17,9 @@ const SettingsPage = lazy(() => import('@/pages/settings/SettingsPage'))
 const ReceiptScannerPage = lazy(() => import('@/pages/receipts/ReceiptScannerPage'))
 const NotificationsPage = lazy(() => import('@/pages/NotificationsPage'))
 const ReportsPage = lazy(() => import('@/pages/ReportsPage'))
+const BehavioralInsightsLitePage = lazy(() => import('@/pages/behavior-lite/BehavioralInsightsLitePage'))
+const PredictiveAnalyticsLitePage = lazy(() => import('@/pages/predict-lite/PredictiveAnalyticsLitePage'))
+const FinancialReflectionPage = lazy(() => import('@/pages/financial-reflection/FinancialReflectionPage'))
 
 export function AppRouter() {
   return (
@@ -41,6 +44,9 @@ export function AppRouter() {
           <Route path="/receipts" element={<ReceiptScannerPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/behavior-lite" element={<BehavioralInsightsLitePage />} />
+          <Route path="/predict-lite" element={<PredictiveAnalyticsLitePage />} />
+          <Route path="/financial-reflection" element={<FinancialReflectionPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
